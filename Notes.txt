@@ -1,0 +1,49 @@
+AWS Region table :
+https://aws.amazon.com/about-aws/global-infrastructure/regional-product-services/
+
+
+IAM
+Root Acc : should only be used for creating users and groups
+Group : It only contains users  and not groups
+Users :  it can be associated with 0 or more groups
+
+Policy are json documents that provide permission and can be assigned to group or user
+
+Role or IAM role: it is created so that services can access resources on our behalf in our accounts .
+    These are also a set of permissions
+
+
+
+IAM Security tools
+1. IAM Credentials Report (account-level): A report that lists all your account's users and the status of their 
+various credentials
+2. IAM Access Advisor (user-level): Access advisor shows the service permissions granted to a user and when
+ those services were last accessed. You can use this information to revise your policies.
+
+
+ Amazon EC2
+• EC2 is one of the most popular of AWS’ offering
+• EC2 = Elastic Compute Cloud = Infrastructure as a Service
+• It mainly consists in the capability of :
+    • Renting virtual machines (EC2)
+    • Storing data on virtual drives (EBS)
+    • Distributing load across machines (ELB)
+    • Scaling the services using an auto-scaling group (ASG)
+    • Knowing EC2 is fundamental to understand how the Cloud works
+
+EC2 sizing & configuration options
+• Operating System (OS): Linux, Windows or Mac OS
+• How much compute power & cores (CPU)
+• How much random-access memory (RAM)
+• How much storage space:
+    • Network-attached (EBS & EFS)
+    • hardware (EC2 Instance Store)
+• Network card: speed of the card, Public IP address
+• Firewall rules: security group
+• Bootstrap script (configure at first launch): EC2 User Data
+
+
+===============================================================================
+Read about
+1. Identity Center
+2.
