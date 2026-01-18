@@ -93,6 +93,144 @@ error or it’s not launched
 • All outbound traffic is authorised by default
 
 
+
+Classic Ports to know
+• 22 = SSH (Secure Shell) - log into a Linux instance
+• 21 = FTP (File Transfer Protocol) – upload files into a file share
+• 22 = SFTP (Secure File Transfer Protocol) – upload files using SSH
+• 80 = HTTP – access unsecured websites
+• 443 = HTTPS – access secured websites
+• 3389 = RDP (Remote Desktop Protocol) – log into a Windows instance
+
+
+
+# IAM Role vs Security Group (AWS) — Purpose, Use Cases, Where Used
+
+1. IAM Role
+
+---
+
+What it is:
+
+* An identity in AWS that has permissions (policies) attached.
+* It controls what AWS API actions are allowed/denied.
+
+What it controls:
+
+* Authorization to AWS services and resources (S3, DynamoDB, SQS, Secrets Manager, CloudWatch, etc.)
+* NOT network ports, NOT inbound/outbound traffic rules.
+
+Where it is used:
+
+* EC2 Instance Role (EC2 app accesses S3, CloudWatch, Secrets Manager)
+* Lambda Execution Role
+* ECS Task Role / Execution Role
+* EKS IRSA (IAM role for Kubernetes service account)
+* Cross-account access (AssumeRole)
+* Temporary access via STS (short-lived credentials)
+
+Typical use cases:
+
+* EC2 needs to read/write S3 without storing access keys on the server.
+* Lambda needs to write to DynamoDB or publish to SNS.
+* App needs to fetch secrets from Secrets Manager or Parameter Store.
+* One AWS account/user needs controlled access into another account (cross-account role).
+
+Key mental model:
+
+* IAM Role answers: "Can this identity do this action in AWS?"
+
+2. Security Group
+
+---
+
+What it is:
+
+* A VPC-level virtual firewall for resources.
+* It controls what network traffic is allowed in/out (protocol + port + source/destination).
+
+What it controls:
+
+* Connectivity (network reachability) to/from a resource.
+* It does NOT grant AWS API permissions like S3:GetObject.
+
+Where it is used:
+
+* EC2 instances
+* RDS databases
+* Load balancers (ALB/NLB)
+* ECS services (awsvpc networking)
+* Interface endpoints/ENI-based resources in a VPC
+
+Typical use cases:
+
+* Allow inbound HTTPS (443) from the internet to a web server.
+* Allow SSH (22) only from your IP address.
+* Allow app servers to reach the DB on 5432/3306, but block everyone else.
+* Allow traffic from another security group (best practice inside VPC).
+
+Key mental model:
+
+* Security Group answers: "Can network traffic reach this resource on this port?"
+
+3. Quick Comparison
+
+---
+
+IAM Role:
+
+* Type: Authorization (AWS API permissions)
+* Controls: Actions on AWS services/resources
+* Example: Allow s3:GetObject, dynamodb:PutItem
+
+Security Group:
+
+* Type: Network firewall (connectivity)
+* Controls: Inbound/outbound traffic (ports, protocols, sources)
+* Example: Allow TCP 443 from 0.0.0.0/0; allow TCP 5432 from app SG
+
+4. Real-World Example (Web App)
+
+---
+
+EC2 Web Server:
+
+* Security Group:
+
+  * Inbound: 443 from internet
+  * Outbound: 5432 to DB security group
+* IAM Role:
+
+  * Allow reading files from S3
+  * Allow writing logs to CloudWatch
+  * Allow reading secrets from Secrets Manager
+
+RDS Database:
+
+* Security Group:
+
+  * Inbound: 5432 only from EC2 Web Server security group
+* IAM Role:
+
+  * Usually not needed for basic DB connectivity (network + DB creds handle it)
+
+5. Common Mistakes
+
+---
+
+* "I gave IAM permission but it still can’t connect"
+  -> Check Security Group rules, routes, subnet, NACLs, DNS, etc.
+
+* "Ports are open but app can’t access S3"
+  -> Check IAM role attached to compute + correct policy permissions.
+
+Rule of thumb:
+
+* If the problem is "AWS access to a service" -> IAM Role
+* If the problem is "ports / traffic / connectivity" -> Security Group
+
+
+
 ===============================================================================
 Read about
 1. Identity Center
